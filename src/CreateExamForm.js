@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import "./QuizApp.css"; // Đảm bảo file CSS này tồn tại cùng thư mục
-const handleCancel = () => {
-  window.location.href = "/";
-};
 
-function CreateExamForm() {
+function CreateExamForm({ setExamConfig, goToCreateForm }) {
   const [examName, setExamName] = useState("");
   const [grade, setGrade] = useState("");
   const [subject, setSubject] = useState("");
@@ -39,15 +36,14 @@ function CreateExamForm() {
   };
 
   const addExamCode = () => {
-    setExamCodes([
-      ...examCodes,
-      {
-        id: examCodes.length + 1,
-        questions: 5,
-        totalScore: 10,
-        answers: Array(5).fill(""),
-      },
-    ]);
+    const newId = examCodes.length + 1;
+    const newCode = {
+      id: newId,
+      questions: 5,
+      totalScore: 10,
+      answers: Array(5).fill(""),
+    };
+    setExamCodes([...examCodes, newCode]);
   };
 
   const calculateScorePerQuestion = (code) => {
@@ -55,8 +51,22 @@ function CreateExamForm() {
   };
 
   const handleSave = () => {
-    alert("Đề thi đã được lưu!");
-    // Xử lý lưu backend nếu cần
+    const examData = {
+      examName,
+      grade,
+      subject,
+      scoring,
+      examCodes,
+    };
+
+    setExamConfig(examData); // Truyền dữ liệu về App.js
+    goToCreateForm(); // Điều hướng sang CreateForm
+
+    console.log("Đề thi đã được lưu:", examData);
+  };
+
+  const handleCancel = () => {
+    window.location.href = "/";
   };
 
   return (
@@ -80,16 +90,17 @@ function CreateExamForm() {
             className="form-input"
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
-            placeholder="Nhập khối học....."
-          ></input>
+            placeholder="Nhập khối học..."
+          />
         </div>
         <div>
           <label>Môn học:</label>
           <input
             className="form-input"
-            onChange={(e) => setGrade(e.target.value)}
-            placeholder="Nhập môn học......"
-          ></input>
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Nhập môn học..."
+          />
         </div>
       </div>
 
@@ -127,7 +138,7 @@ function CreateExamForm() {
       ))}
 
       <button onClick={addExamCode} className="button-green">
-        + Thêm mã đề
+        + Tạo Mã Đề Mới
       </button>
 
       <div className="form-group-row">
