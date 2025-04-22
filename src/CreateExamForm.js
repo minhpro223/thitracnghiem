@@ -114,7 +114,7 @@ function CreateExamForm({ setExamConfig, goToCreateForm }) {
                 type="number"
                 min="1"
                 className="form-input"
-                value={code.questions}
+                value={code.questions.length}
                 onChange={(e) =>
                   handleQuestionCountChange(index, e.target.value)
                 }

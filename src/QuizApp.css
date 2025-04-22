@@ -1333,7 +1333,7 @@
   padding: 30px;
   max-width: 100%;
   margin: auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1372,7 +1372,7 @@
   padding: 20px;
   font-size: 18px;
   border: 2px solid #ccc;
-  border-radius: 10px;
+  border-radius: 1px;
   background-color: #f1f1f1;
   width: 22%; /* Chia đều 4 cột */
   text-align: center;
@@ -1386,5 +1386,299 @@
 }
 
 .options-horizontal input[type="radio"] {
+  margin-right: 20px;
+}
+.quiz-container {
+  padding: 100px;
+}
+
+.timer {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: red;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+.question-box {
+  margin-bottom: 20px;
+}
+
+input[type="radio"] {
   margin-right: 10px;
 }
+/* Chung cho QuizApp */
+.quiz-container {
+  width: 80%;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Tiêu đề */
+.quiz-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Thông tin sinh viên */
+.quiz-container p {
+  color: #555;
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+/* Hiển thị timer */
+.timer h4 {
+  font-size: 18px;
+  color: #ff6347;
+  font-weight: bold;
+}
+
+/* Các câu hỏi */
+.question-box1 {
+  margin-bottom: 20px;
+}
+
+/* Tiêu đề câu hỏi */
+.question-box1 h4 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 1px;
+  margin-top: 0px;
+}
+
+/* Hiển thị các lựa chọn */
+.question-box1 label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 5px;
+  margin: 5px 0;
+  background-color: #f7f7f7;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hiệu ứng hover cho câu trả lời */
+.question-box1 label:hover {
+  background-color: #eee4e4;
+}
+
+/* Input radio */
+input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background-color: #f8f1f1;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hiển thị vòng tròn bên trong khi được chọn */
+input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  background-color: #2196f3;
+  border-radius: 50%;
+}
+
+/* Cột đáp án */
+.question-box1 {
+  display: grid;
+  grid-template-columns: repeat(1, 2fr); /* Chia thành 2 cột */
+  gap: 10px;
+  margin-top: 20px;
+  margin: 10px;
+  align-items: center;
+}
+.answer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  background-color: #f3f3f3;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.answer-option:hover {
+  background-color: #e0eaff;
+}
+
+.answer-option input {
+  margin-right: 8px;
+}
+
+/* Hiển thị nút nộp bài */
+.submit-button,
+.retry-button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Nút nộp bài */
+.submit-button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+/* Nút thi lại */
+.retry-button {
+  background-color: #ff9800;
+  color: #fff;
+  border: none;
+}
+
+.retry-button:hover {
+  background-color: #f57c00;
+}
+
+/* Kết quả */
+.result h3 {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.result span {
+  font-size: 22px;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* Đạt */
+.result .green {
+  background-color: #4caf50;
+}
+input[type="radio"]:checked {
+  background-color: #64a8e0; /* Màu xanh dương khi được chọn */
+  transform: scale(1.2); /* Phóng to nhẹ để tạo hiệu ứng nổi bật */
+}
+
+/* Không đạt */
+.result .red {
+  background-color: #f44336;
+}
+
+/* Hiển thị số câu hỏi */
+.quiz-container p:last-child {
+  font-size: 16px;
+  color: #333;
+  margin-top: 10px;
+}
+/* Container chính */
+.quiz-container {
+  position: relative;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+}
+
+/* Nút mở menu */
+.menu-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 999;
+  font-size: 24px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-toggle:hover {
+  background-color: #f2f2f2;
+}
+
+/* Menu danh sách câu hỏi */
+.question-menu {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 998;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.question-menu h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.question-menu ul {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.question-menu li {
+  background-color: #f9f9f9;
+  padding: 6px 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.question-menu li:hover {
+  background-color: #e0f0ff;
+}
+
+/* Các thành phần khác vẫn giữ nguyên logic React, có thể thêm style tương tự */

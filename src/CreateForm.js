@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./QuizApp.css";
 
-function CreateForm({ examConfig }) {
+function CreateForm({ examConfig, onFinish }) {
   const [formData, setFormData] = useState(
     examConfig.examCodes.map((code) => ({
       id: code.id,
@@ -38,13 +38,16 @@ function CreateForm({ examConfig }) {
       ...examConfig,
       examCodes: examConfig.examCodes.map((code, index) => ({
         ...code,
-        questionsData: formData[index].questions, // 👈 sửa "questions" thành "questionsData"
+        questionsData: formData[index].questions,
       })),
     };
-  
+
     localStorage.setItem("examConfig", JSON.stringify(fullExam));
     alert("✅ Đề thi đã được tạo và lưu thành công!");
-    
+
+    if (onFinish) {
+      onFinish(); // 👉 Quay về trang chủ sau khi lưu
+    }
   };
 
   return (

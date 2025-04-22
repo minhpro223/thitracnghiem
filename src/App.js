@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import QuizApp from "./QuizApp";
 import CreateExamForm from "./CreateExamForm";
 import CreateForm from "./CreateForm";
@@ -14,6 +14,11 @@ function App() {
   const [examConfig, setExamConfig] = useState(null);
   const [studentInfo, setStudentInfo] = useState(null);
   const [studentAnswers, setStudentAnswers] = useState([]);
+  const [loginFormData, setLoginFormData] = useState({
+    username: "",
+    password: "",
+    remember: false,
+  });
 
   const toggleLogin = () => {
     setShowLogin(!showLogin);
@@ -25,12 +30,35 @@ function App() {
     setShowLogin(false);
   };
 
+  const handleLoginChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setLoginFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
-    const username = e.target.username.value;
-    const password = e.target.password.value;
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
+    const { username, password, remember } = loginFormData;
+    const storedUser = JSON.parse(localStorage.getItem("user"));  
+    
+    if (username === "admin" && password === "1") {
+      const user = { username: "admin", password: "1", role: "admin" };
+      setCurrentUser(user);
+      setLoginError("");
+      setShowLogin(false);
+  
+      if (remember) {
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+      } else {
+        localStorage.removeItem("username");
+        localStorage.removeItem("password");
+      }
+    } else {
+      setLoginError("❌ Tên đăng nhập hoặc mật khẩu không đúng.");
+    }
     if (
       storedUser &&
       storedUser.username === username &&
@@ -39,6 +67,14 @@ function App() {
       setCurrentUser(storedUser);
       setLoginError("");
       setShowLogin(false);
+
+      if (remember) {
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+      } else {
+        localStorage.removeItem("username");
+        localStorage.removeItem("password");
+      }
     } else {
       setLoginError("❌ Tên đăng nhập hoặc mật khẩu không đúng.");
     }
@@ -50,7 +86,7 @@ function App() {
       username: e.target.username.value,
       password: e.target.password.value,
       email: e.target.email.value,
-      role: e.target.role.value,
+      role: e.target.role.value || "user",
     };
     localStorage.setItem("user", JSON.stringify(user));
     alert("✅ Đăng ký thành công!");
@@ -65,18 +101,31 @@ function App() {
   const handleCreateQuiz = () => {
     if (!currentUser) return setShowLogin(true);
     if (currentUser.role !== "admin") {
-      return alert("⚠️ Bạn phải là quản trị viên để tạo đề thi.");
+      return alert("⚠️ Bạn phải là giáo viên để tạo đề thi.");
     }
     setCurrentPage("createExam");
   };
 
   const handleCreateRoom = () => {
     if (!currentUser) return setShowLogin(true);
-    if (currentUser.role !== "admin") {
-      return alert("⚠️ Bạn phải là quản trị viên để tạo phòng thi.");
+    if (currentUser.role !== "admin" && currentUser.role !== "user") {
+      return alert("⚠️ Bạn phải là giáo viên mới tạo được phòng thi.");
     }
     setCurrentPage("createRoom");
   };
+
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    const savedPassword = localStorage.getItem("password");
+    if (savedUsername && savedPassword) {
+      setLoginFormData((prev) => ({
+        ...prev,
+        username: savedUsername,
+        password: savedPassword,
+        remember: true,
+      }));
+    }
+  }, []);
 
   return (
     <div>
@@ -96,12 +145,25 @@ function App() {
             </>
           ) : (
             <>
+              <button className="nav-button" onClick={handleLogout}>Đăng xuất</button>
+
+              {/* Nếu là admin, hiển thị các nút tạo đề thi và tạo phòng thi */}
+              {currentUser.role === "admin" && (
+                <>
+                  <button className="nav-button" onClick={handleCreateQuiz}>Tạo đề thi</button>
+                  
+                </>
+              )}
+
+              {/* Nếu là user, chỉ hiển thị nút Thi */}
+              {currentUser.role === "user" && (
+                
+                <button className="nav-button" onClick={handleCreateRoom}>Thi</button>
+              )}
+
               <span style={{ marginRight: 10 }}>
                 👤 {currentUser.username} ({currentUser.role})
               </span>
-              <button className="nav-button" onClick={handleLogout}>Đăng xuất</button>
-              <button className="nav-button" onClick={handleCreateQuiz}>Tạo đề thi</button>
-              <button className="nav-button" onClick={handleCreateRoom}>Tạo phòng thi</button>
             </>
           )}
         </div>
@@ -114,8 +176,31 @@ function App() {
             <button className="close-btn" onClick={() => setShowLogin(false)}>&times;</button>
             <h3>Đăng nhập</h3>
             <form onSubmit={handleLogin}>
-              <input type="text" name="username" placeholder="Tên đăng nhập" required />
-              <input type="password" name="password" placeholder="Mật khẩu" required />
+              <input
+                type="text"
+                name="username"
+                placeholder="Tên đăng nhập"
+                value={loginFormData.username}
+                onChange={handleLoginChange}
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Mật khẩu"
+                value={loginFormData.password}
+                onChange={handleLoginChange}
+                required
+              />
+              <label>
+                <input
+                  type="checkbox"
+                  name="remember"
+                  checked={loginFormData.remember}
+                  onChange={handleLoginChange}
+                />
+                Lưu mật khẩu
+              </label>
               {loginError && <p style={{ color: "red" }}>{loginError}</p>}
               <button type="submit" className="submit-button">Đăng nhập</button>
             </form>
@@ -133,17 +218,14 @@ function App() {
               <input name="username" placeholder="Tên người dùng" required />
               <input name="email" type="email" placeholder="Email" required />
               <input name="password" type="password" placeholder="Mật khẩu" required />
-              <select name="role" required>
-                <option value="user">Người dùng</option>
-                <option value="admin">Quản trị viên</option>
-              </select>
+              
               <button className="submit-button">Đăng ký</button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Các trang nội dung */}
+      {/* Nội dung các trang */}
       {currentPage === "home" && (
         <div style={{ padding: 20 }}>
           <h3>Chào mừng đến với QuizApp!</h3>
@@ -159,7 +241,8 @@ function App() {
       )}
 
       {currentPage === "createForm" && examConfig && (
-        <CreateForm examConfig={examConfig} />
+        <CreateForm examConfig={examConfig}
+         />
       )}
 
       {currentPage === "createRoom" && (
@@ -201,7 +284,7 @@ function App() {
                 <div key={idx} style={{ marginBottom: 10 }}>
                   <p><strong>Câu {idx + 1}:</strong> {q.questionText}</p>
                   <p>✅ Đáp án đúng: {String.fromCharCode(65 + q.correctAnswer)}</p>
-                  <p>📝 Bạn chọn: {selected ? String.fromCharCode(65 + selected) : "Chưa chọn"} {isCorrect ? "✅" : "❌"}</p>
+                  <p>📝 Bạn chọn: {selected !== undefined ? String.fromCharCode(65 + selected) : "Chưa chọn"} {isCorrect ? "✅" : "❌"}</p>
                   <hr />
                 </div>
               );
