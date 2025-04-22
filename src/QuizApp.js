@@ -14,7 +14,7 @@ function QuizApp({ onRetry, onCreateNewRoom }) {
         code: "EX123",
         questionsData: [
           {
-            questionText: "Câu hỏi 1: question la cai cho gi = ?",
+            questionText: "Câu hỏi 1: question la cai cho gi === ?",
             options: [
               "mot cai gi do rat xam lz",
               "dung hoi nưa khong muon biet",

@@ -15,23 +15,28 @@ function CreateExamForm({ setExamConfig, goToCreateForm }) {
   const [examCodes, setExamCodes] = useState([
     {
       id: 1,
-      questions: 5,
-      totalScore: 8,
-      answers: Array(5).fill(""),
+      questions: 0, // Giá trị mặc định là 0 để người dùng nhập vào
+      totalScore: 0,
+      answers: [],
     },
   ]);
 
   const handleQuestionCountChange = (index, value) => {
+    const num = parseInt(value); // Chuyển giá trị nhập thành số nguyên
+
+    // Kiểm tra giá trị nhập vào hợp lệ
+    if (isNaN(num) || num <= 0) return; // Nếu không phải số hợp lệ hoặc <= 0 thì không làm gì
+
     const updated = [...examCodes];
-    const num = parseInt(value);
-    updated[index].questions = num;
-    updated[index].answers = Array(num).fill("");
+    updated[index].questions = num; // Cập nhật số lượng câu hỏi
+    updated[index].answers = Array(num).fill(""); // Tạo mảng answers mới sao cho tương ứng với số câu hỏi
     setExamCodes(updated);
   };
 
   const handleTotalScoreChange = (index, value) => {
     const updated = [...examCodes];
-    updated[index].totalScore = parseFloat(value);
+    const score = parseFloat(value);
+    updated[index].totalScore = isNaN(score) ? 0 : score; // Đảm bảo giá trị điểm là số hợp lệ
     setExamCodes(updated);
   };
 
@@ -39,18 +44,30 @@ function CreateExamForm({ setExamConfig, goToCreateForm }) {
     const newId = examCodes.length + 1;
     const newCode = {
       id: newId,
-      questions: 5,
-      totalScore: 10,
-      answers: Array(5).fill(""),
+      questions: 0, // Để mặc định là 0 câu hỏi
+      totalScore: 0,
+      answers: [],
     };
     setExamCodes([...examCodes, newCode]);
   };
 
   const calculateScorePerQuestion = (code) => {
-    return (code.totalScore / code.questions).toFixed(2);
+    if (code.questions === 0) return "0";
+    return (code.totalScore / code.questions).toFixed(2); // Tính điểm mỗi câu
   };
 
   const handleSave = () => {
+    // Kiểm tra dữ liệu hợp lệ
+    if (!examName || !grade || !subject) {
+      alert("❗ Vui lòng điền đầy đủ thông tin đề thi.");
+      return;
+    }
+
+    if (examCodes.some((code) => code.questions <= 0 || code.totalScore <= 0)) {
+      alert("❗ Mỗi mã đề cần có số lượng câu hỏi và tổng điểm lớn hơn 0.");
+      return;
+    }
+
     const examData = {
       examName,
       grade,
@@ -61,12 +78,11 @@ function CreateExamForm({ setExamConfig, goToCreateForm }) {
 
     setExamConfig(examData); // Truyền dữ liệu về App.js
     goToCreateForm(); // Điều hướng sang CreateForm
-
     console.log("Đề thi đã được lưu:", examData);
   };
 
   const handleCancel = () => {
-    window.location.href = "/";
+    window.location.href = "/"; // Quay về trang chủ nếu hủy
   };
 
   return (
@@ -114,9 +130,9 @@ function CreateExamForm({ setExamConfig, goToCreateForm }) {
                 type="number"
                 min="1"
                 className="form-input"
-                value={code.questions.length}
+                value={code.questions}
                 onChange={(e) =>
-                  handleQuestionCountChange(index, e.target.value)
+                  handleQuestionCountChange(index, e.target.value) // Chỉ cập nhật khi có thay đổi
                 }
               />
             </label>

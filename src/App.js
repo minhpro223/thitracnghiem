@@ -41,14 +41,13 @@ function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     const { username, password, remember } = loginFormData;
-    const storedUser = JSON.parse(localStorage.getItem("user"));  
-    
+
     if (username === "admin" && password === "1") {
-      const user = { username: "admin", password: "1", role: "admin" };
-      setCurrentUser(user);
+      const admin = { username: "admin", password: "1", role: "admin" };
+      setCurrentUser(admin);
       setLoginError("");
       setShowLogin(false);
-  
+
       if (remember) {
         localStorage.setItem("username", username);
         localStorage.setItem("password", password);
@@ -56,9 +55,10 @@ function App() {
         localStorage.removeItem("username");
         localStorage.removeItem("password");
       }
-    } else {
-      setLoginError("❌ Tên đăng nhập hoặc mật khẩu không đúng.");
+      return;
     }
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     if (
       storedUser &&
       storedUser.username === username &&
@@ -82,13 +82,20 @@ function App() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    const user = {
+    const newUser = {
       username: e.target.username.value,
       password: e.target.password.value,
       email: e.target.email.value,
-      role: e.target.role.value || "user",
+      role: "user",
     };
-    localStorage.setItem("user", JSON.stringify(user));
+
+    const existingUser = JSON.parse(localStorage.getItem("user"));
+    if (existingUser && existingUser.username === newUser.username) {
+      alert("❌ Tên người dùng đã tồn tại.");
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(newUser));
     alert("✅ Đăng ký thành công!");
     setShowRegister(false);
   };
@@ -108,9 +115,6 @@ function App() {
 
   const handleCreateRoom = () => {
     if (!currentUser) return setShowLogin(true);
-    if (currentUser.role !== "admin" && currentUser.role !== "user") {
-      return alert("⚠️ Bạn phải là giáo viên mới tạo được phòng thi.");
-    }
     setCurrentPage("createRoom");
   };
 
@@ -135,30 +139,43 @@ function App() {
           <h2>QuizApp</h2>
         </div>
         <div className="navbar-right">
-          <button className="nav-button" onClick={() => setCurrentPage("home")}>Trang chủ</button>
-          <button className="nav-button" onClick={() => setCurrentPage("result")}>Xem kết quả</button>
+          <button className="nav-button" onClick={() => setCurrentPage("home")}>
+            Trang chủ
+          </button>
 
           {!currentUser ? (
             <>
-              <button className="nav-button" onClick={toggleLogin}>Đăng nhập</button>
-              <button className="nav-button" onClick={toggleRegister}>Đăng ký</button>
+              <button className="nav-button" onClick={toggleLogin}>
+                Đăng nhập
+              </button>
+              <button className="nav-button" onClick={toggleRegister}>
+                Đăng ký
+              </button>
             </>
           ) : (
             <>
-              <button className="nav-button" onClick={handleLogout}>Đăng xuất</button>
-
-              {/* Nếu là admin, hiển thị các nút tạo đề thi và tạo phòng thi */}
-              {currentUser.role === "admin" && (
-                <>
-                  <button className="nav-button" onClick={handleCreateQuiz}>Tạo đề thi</button>
-                  
-                </>
+              <button className="nav-button" onClick={handleLogout}>
+                Đăng xuất
+              </button>
+              {currentUser.role === "user" && (
+                <button
+                  className="nav-button"
+                  onClick={() => setCurrentPage("result")}
+                >
+                  Xem kết quả
+                </button>
               )}
 
-              {/* Nếu là user, chỉ hiển thị nút Thi */}
+              {currentUser.role === "admin" && (
+                <button className="nav-button" onClick={handleCreateQuiz}>
+                  Tạo đề thi
+                </button>
+              )}
+
               {currentUser.role === "user" && (
-                
-                <button className="nav-button" onClick={handleCreateRoom}>Thi</button>
+                <button className="nav-button" onClick={handleCreateRoom}>
+                  Thi
+                </button>
               )}
 
               <span style={{ marginRight: 10 }}>
@@ -173,7 +190,9 @@ function App() {
       {showLogin && (
         <div className="modal">
           <div className="form-box">
-            <button className="close-btn" onClick={() => setShowLogin(false)}>&times;</button>
+            <button className="close-btn" onClick={() => setShowLogin(false)}>
+              &times;
+            </button>
             <h3>Đăng nhập</h3>
             <form onSubmit={handleLogin}>
               <input
@@ -202,7 +221,9 @@ function App() {
                 Lưu mật khẩu
               </label>
               {loginError && <p style={{ color: "red" }}>{loginError}</p>}
-              <button type="submit" className="submit-button">Đăng nhập</button>
+              <button type="submit" className="submit-button">
+                Đăng nhập
+              </button>
             </form>
           </div>
         </div>
@@ -212,13 +233,22 @@ function App() {
       {showRegister && (
         <div className="modal">
           <div className="form-box">
-            <button className="close-btn" onClick={() => setShowRegister(false)}>&times;</button>
+            <button
+              className="close-btn"
+              onClick={() => setShowRegister(false)}
+            >
+              &times;
+            </button>
             <h3>Đăng ký</h3>
             <form onSubmit={handleRegister}>
               <input name="username" placeholder="Tên người dùng" required />
               <input name="email" type="email" placeholder="Email" required />
-              <input name="password" type="password" placeholder="Mật khẩu" required />
-              
+              <input
+                name="password"
+                type="password"
+                placeholder="Mật khẩu"
+                required
+              />
               <button className="submit-button">Đăng ký</button>
             </form>
           </div>
@@ -241,8 +271,10 @@ function App() {
       )}
 
       {currentPage === "createForm" && examConfig && (
-        <CreateForm examConfig={examConfig}
-         />
+        <CreateForm
+          examConfig={examConfig}
+          onFinish={() => setCurrentPage("home")}
+        />
       )}
 
       {currentPage === "createRoom" && (
@@ -265,42 +297,69 @@ function App() {
       {currentPage === "result" && studentInfo && examConfig && (
         <div style={{ padding: 20 }}>
           <h3>📋 Kết quả làm bài</h3>
-          <p><strong>Họ tên:</strong> {studentInfo.studentName}</p>
-          <p><strong>MSSV:</strong> {studentInfo.studentId}</p>
-          <p><strong>Phòng thi:</strong> {studentInfo.roomName}</p>
-          <p><strong>Mã đề:</strong> {studentInfo.examCode}</p>
+          <p>
+            <strong>Họ tên:</strong> {studentInfo.studentName}
+          </p>
+          <p>
+            <strong>MSSV:</strong> {studentInfo.studentId}
+          </p>
+          <p>
+            <strong>Phòng thi:</strong> {studentInfo.roomName}
+          </p>
+          <p>
+            <strong>Mã đề:</strong> {studentInfo.examCode}
+          </p>
 
           <h4>Chi tiết bài làm:</h4>
           {(() => {
-            const exam = examConfig.examCodes.find(e => e.code === studentInfo.examCode);
+            const exam = examConfig.examCodes.find(
+              (e) => e.id === studentInfo.examCode // Chỉnh sửa phần này nếu examCode là mã ID của mã đề
+            );
             let score = 0;
 
-            return exam.questions.map((q, idx) => {
-              const selected = studentAnswers[idx];
+            const details = exam.questions.map((q, idx) => {
+              const selected = studentAnswers[idx]; // Đảm bảo studentAnswers có đủ câu trả lời cho tất cả câu hỏi
               const isCorrect = q.correctAnswer === selected;
               if (isCorrect) score++;
 
               return (
                 <div key={idx} style={{ marginBottom: 10 }}>
-                  <p><strong>Câu {idx + 1}:</strong> {q.questionText}</p>
-                  <p>✅ Đáp án đúng: {String.fromCharCode(65 + q.correctAnswer)}</p>
-                  <p>📝 Bạn chọn: {selected !== undefined ? String.fromCharCode(65 + selected) : "Chưa chọn"} {isCorrect ? "✅" : "❌"}</p>
+                  <p>
+                    <strong>Câu {idx + 1}:</strong> {q.questionText}
+                  </p>
+                  <p>
+                    ✅ Đáp án đúng: {String.fromCharCode(65 + q.correctAnswer)}{" "}
+                    {/* Cập nhật lại nếu đáp án đúng không phải A, B, C... */}
+                  </p>
+                  <p>
+                    📝 Bạn chọn:{" "}
+                    {selected !== undefined
+                      ? String.fromCharCode(65 + selected)
+                      : "Chưa chọn"}{" "}
+                    {isCorrect ? "✅" : "❌"}
+                  </p>
                   <hr />
                 </div>
               );
             });
-          })()}
 
-          <p><strong>🎯 Tổng điểm:</strong> {
-            (() => {
-              const exam = examConfig.examCodes.find(e => e.code === studentInfo.examCode);
-              let score = 0;
-              exam.questions.forEach((q, idx) => {
-                if (q.correctAnswer === studentAnswers[idx]) score++;
-              });
-              return `${score} / ${exam.questions.length}`;
-            })()
-          }</p>
+            return (
+              <>
+                {details}
+                <p>
+                  <strong>🎯 Tổng điểm:</strong> {score} /{" "}
+                  {exam.questions.length}
+                </p>
+                <p>
+                  <strong>
+                    {score >= exam.questions.length / 2
+                      ? "✅ Đạt"
+                      : "❌ Không đạt"}
+                  </strong>
+                </p>
+              </>
+            );
+          })()}
         </div>
       )}
     </div>

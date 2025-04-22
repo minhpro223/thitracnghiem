@@ -42,11 +42,15 @@ function CreateForm({ examConfig, onFinish }) {
       })),
     };
 
+    // Lưu vào localStorage
     localStorage.setItem("examConfig", JSON.stringify(fullExam));
+
+    // Thông báo
     alert("✅ Đề thi đã được tạo và lưu thành công!");
 
+    // Chuyển về trang chủ nếu có hàm callback
     if (onFinish) {
-      onFinish(); // 👉 Quay về trang chủ sau khi lưu
+      onFinish(); // Gọi callback từ App.js để chuyển về trang chủ
     }
   };
 
@@ -54,8 +58,7 @@ function CreateForm({ examConfig, onFinish }) {
     <div className="create-exam-container">
       <h2 className="form-title">Nhập Câu hỏi</h2>
       <h4 className="form-subtitle">
-        Tên đề: {examConfig.examName} | {examConfig.grade} -{" "}
-        {examConfig.subject}
+        Tên đề: {examConfig.examName} | {examConfig.grade} - {examConfig.subject}
       </h4>
 
       {formData.map((exam, examIndex) => (
@@ -80,12 +83,7 @@ function CreateForm({ examConfig, onFinish }) {
                   placeholder={`Đáp án ${String.fromCharCode(65 + optIndex)}`}
                   value={opt}
                   onChange={(e) =>
-                    handleOptionChange(
-                      examIndex,
-                      qIndex,
-                      optIndex,
-                      e.target.value
-                    )
+                    handleOptionChange(examIndex, qIndex, optIndex, e.target.value)
                   }
                 />
               ))}
